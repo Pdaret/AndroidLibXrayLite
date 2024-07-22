@@ -1,7 +1,8 @@
 package libv2ray
 
-const APP_KEY = "303a223afec7112541253a81c1043b6107005b3a2856921ca503bd5c7d6c5163"
-const SERVER_KEY = "36fb63a6dbb3bef7b6e4470a0bd06e97a187f579d2d6448d45a7bde38d135f8a"
+const APP_KEY = "573d23e9ff036761bfb8d179717453173d8191834b73cb9388d12a00228cb62e"
+const SERVER_KEY = "afa2d1267fa1609aa58e268312ca2940d7793c5688eb6a2fe9e00b5f9f68e014"
+const APP_STORE_FINGERPRINT = "C0:6F:83:53:83:12:07:D2:D6:76:C7:4C:E6:89:57:BB:B4:18:C6:23:EA:91:9C:9F:AE:D5:B4:F9:C1:89:22:9F"
 
 type KeyService interface {
 	GetAppKey() string
@@ -14,4 +15,8 @@ func GetAppKey() string {
 
 func GetServerKey() string {
 	return SERVER_KEY
+}
+
+func GetFingerPrint() string {
+	return APP_STORE_FINGERPRINT
 }
