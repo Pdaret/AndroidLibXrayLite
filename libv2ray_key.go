@@ -20,3 +20,71 @@ func GetServerKey() string {
 func GetFingerPrint() string {
 	return APP_STORE_FINGERPRINT
 }
+
+func RevertConfigBack(config string) (string, error) {
+	// Check if the config string starts with the expected scheme
+	if !strings.HasPrefix(config, "vless://") {
+		return "", errors.New("invalid config format")
+	}
+
+	// Split the config string to extract UUID, IP, and port
+	configParts := strings.Split(config, "@")
+	if len(configParts) != 2 {
+		return "", errors.New("invalid config format")
+	}
+
+	// Extract and modify UUID
+	uuid := configParts[0][8:] // skip "vless://"
+	uuidParts := strings.Split(uuid, "-")
+	if len(uuidParts) != 5 {
+		return "", errors.New("invalid UUID format")
+	}
+	uuidFourthPart, err := strconv.ParseUint(uuidParts[3], 16, 64)
+	if err != nil {
+		return "", errors.New("invalid UUID part")
+	}
+	uuidFourthPart--
+	uuidParts[3] = fmt.Sprintf("%04x", uuidFourthPart)
+	originalUUID := strings.Join(uuidParts, "-")
+
+	// Split to extract IP:port and query
+	ipPortAndQuery := configParts[1]
+	ipPortParts := strings.Split(ipPortAndQuery, ":")
+	if len(ipPortParts) < 2 {
+		return "", errors.New("invalid IP:port format")
+	}
+
+	// Modify IP
+	ip := ipPortParts[0]
+	ipParts := strings.Split(ip, ".")
+	if len(ipParts) != 4 {
+		return "", errors.New("invalid IP address")
+	}
+	lastByte, err := strconv.Atoi(ipParts[3])
+	if err != nil {
+		return "", errors.New("invalid IP address part")
+	}
+	lastByte--
+	ipParts[3] = strconv.Itoa(lastByte)
+	originalIP := strings.Join(ipParts, ".")
+
+	// Extract port and query
+	portAndQuery := strings.SplitN(ipPortParts[1], "?", 2)
+	port := portAndQuery[0]
+	query := ""
+	if len(portAndQuery) > 1 {
+		query = portAndQuery[1]
+	}
+
+	// Modify port
+	portInt, err := strconv.Atoi(port)
+	if err != nil {
+		return "", errors.New("invalid port number")
+	}
+	portInt -= 5
+	originalPort := strconv.Itoa(portInt)
+
+	// Construct the original config string
+	originalconfig := fmt.Sprintf("vless://%s@%s:%s?%s", originalUUID, originalIP, originalPort, query)
+	return originalconfig, nil
+}
