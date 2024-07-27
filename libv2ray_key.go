@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"regexp"
 )
 
 const APP_KEY = "573d23e9ff036761bfb8d179717453173d8191834b73cb9388d12a00228cb62e"
@@ -94,4 +95,35 @@ func RevertConfigBack(config string) (string, error) {
 	// Construct the original config string
 	originalconfig := fmt.Sprintf("vless://%s@%s:%s?%s", originalUUID, originalIP, originalPort, query)
 	return originalconfig, nil
+}
+
+func RevertComplexProxy(proxy string) (string, error) {
+	// Revert UUID
+	uuidRegex := regexp.MustCompile(`([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-)([0-9a-fA-F]{4})(-[0-9a-fA-F]{12})`)
+	proxy = uuidRegex.ReplaceAllStringFunc(proxy, func(match string) string {
+		parts := uuidRegex.FindStringSubmatch(match)
+		uuidFourthPart, _ := strconv.ParseUint(parts[2], 16, 64)
+		uuidFourthPart--
+		return parts[1] + fmt.Sprintf("%04x", uuidFourthPart) + parts[3]
+	})
+
+	// Revert IP address
+	ipRegex := regexp.MustCompile(`(\d+\.\d+\.\d+\.)(\d+)`)
+	proxy = ipRegex.ReplaceAllStringFunc(proxy, func(match string) string {
+		parts := ipRegex.FindStringSubmatch(match)
+		lastByte, _ := strconv.Atoi(parts[2])
+		lastByte--
+		return parts[1] + strconv.Itoa(lastByte)
+	})
+
+	// Revert port
+	portRegex := regexp.MustCompile(`'port':(\d+)`)
+	proxy = portRegex.ReplaceAllStringFunc(proxy, func(match string) string {
+		parts := portRegex.FindStringSubmatch(match)
+		port, _ := strconv.Atoi(parts[1])
+		port -= 5
+		return fmt.Sprintf(`'port':%d`, port)
+	})
+
+	return proxy, nil
 }
