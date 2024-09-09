@@ -51,8 +51,6 @@ type V2RayPoint struct {
 	DomainName           string
 	ConfigureFileContent string
 	AsyncResolve         bool
-
-	rengoService RengoService
 }
 
 /*V2RayVPNServiceSupportsSet To support Android VPN mode*/
@@ -67,26 +65,6 @@ type V2RayVPNServiceSupportsSet interface {
 	GetFingerPrint() string
 	RevertConfigBack(config string) (string, error)
 	RevertComplexProxy(proxy string) (string, error)
-}
-
-func (v *V2RayPoint) GetAppKey() string {
-	return v.rengoService.AppKey()
-}
-
-func (v *V2RayPoint) GetServerKey() string {
-	return v.rengoService.ServerKey()
-}
-
-func (v *V2RayPoint) GetFingerPrint() string {
-	return v.rengoService.FingerPrint()
-}
-
-func (v *V2RayPoint) RevertConfigBack(config string) (string, error) {
-	return v.rengoService.RevertConfig(config)
-}
-
-func (v *V2RayPoint) RevertComplexProxy(proxy string) (string, error) {
-	return v.rengoService.RevertComplex(proxy)
 }
 
 /*RunLoop Run V2Ray main loop
@@ -261,13 +239,11 @@ func NewV2RayPoint(s V2RayVPNServiceSupportsSet, adns bool) *V2RayPoint {
 			return v2commlog.NewLogger(createStdoutLogWriter()), nil
 		})
 	
-	rengo := NewRengoService()
 	dialer := NewPreotectedDialer(s)
 	v2internet.UseAlternativeSystemDialer(dialer)
 	return &V2RayPoint{
 		SupportSet:   s,
 		dialer:       dialer,
-		rengoService: rengo,
 		AsyncResolve: adns,
 	}
 }

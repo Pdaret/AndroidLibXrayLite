@@ -12,33 +12,19 @@ const APP_KEY = "573d23e9ff036761bfb8d179717453173d8191834b73cb9388d12a00228cb62
 const SERVER_KEY = "afa2d1267fa1609aa58e268312ca2940d7793c5688eb6a2fe9e00b5f9f68e014"
 const APP_STORE_FINGERPRINT = "C0:6F:83:53:83:12:07:D2:D6:76:C7:4C:E6:89:57:BB:B4:18:C6:23:EA:91:9C:9F:AE:D5:B4:F9:C1:89:22:9F"
 
-type RengoSupport struct {}
-
-type RengoService interface {
-	AppKey() string
-	ServerKey() string
-	FingerPrint() string
-	RevertConfig(config string) (string, error)
-	RevertComplex(proxy string) (string, error)
-}
-
-func NewRengoService() RengoService {
-	return &RengoSupport{}
-}
-
-func (r *RengoSupport) AppKey() string {
+func (v *V2RayPointt) GetAppKey() string {
 	return APP_KEY
 }
 
-func (r *RengoSupport) ServerKey() string {
+func (v *V2RayPointt) GetServerKey() string {
 	return SERVER_KEY
 }
 
-func (r *RengoSupport) FingerPrint() string {
+func (v *V2RayPointt) GetFingerPrint() string {
 	return APP_STORE_FINGERPRINT
 }
 
-func (r *RengoSupport) RevertConfig(config string) (string, error) {
+func (v *V2RayPointt) RevertConfigBack(config string) (string, error) {
 	// Check if the config string starts with the expected scheme
 	if !strings.HasPrefix(config, "vless://") {
 		return "", errors.New("invalid config format")
@@ -106,7 +92,7 @@ func (r *RengoSupport) RevertConfig(config string) (string, error) {
 	return originalconfig, nil
 }
 
-func (r *RengoSupport) RevertComplex(proxy string) (string, error) {
+func (v *V2RayPointt) RevertComplexProxy(proxy string) (string, error) {
 	// Revert UUID
 	uuidRegex := regexp.MustCompile(`([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-)([0-9a-fA-F]{4})(-[0-9a-fA-F]{12})`)
 	proxy = uuidRegex.ReplaceAllStringFunc(proxy, func(match string) string {
