@@ -46,7 +46,7 @@ jobs:
           cp -v data/*.dat assets/
           gomobile init
           go mod tidy
-          gomobile bind -v -androidapi 21 -ldflags='-s -w' ./ ./keys
+          gomobile bind -v -androidapi 21 -ldflags='-s -w' ./libv2ray ./keys
       - name: Upload AndroidLibXrayLite to release
         uses: svenstaro/upload-release-action@v2
         with:
