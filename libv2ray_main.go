@@ -60,11 +60,6 @@ type V2RayVPNServiceSupportsSet interface {
 	Shutdown() int
 	Protect(int) bool
 	OnEmitStatus(int, string) int
-	GetAppKey() string
-	GetServerKey() string
-	GetFingerPrint() string
-	RevertConfigBack(config string) (string, error)
-	RevertComplexProxy(proxy string) (string, error)
 }
 
 /*RunLoop Run V2Ray main loop
