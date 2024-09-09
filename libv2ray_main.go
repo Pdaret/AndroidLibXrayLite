@@ -52,7 +52,7 @@ type V2RayPoint struct {
 	ConfigureFileContent string
 	AsyncResolve         bool
 
-	rengoService *RengoService
+	rengoService RengoService
 }
 
 /*V2RayVPNServiceSupportsSet To support Android VPN mode*/
